@@ -11,8 +11,12 @@ class UserTableSeeder extends Seeder
      */
     public function run()
     {
-        factory(App\User::class, 50)->create()->each(function($u) {
-        $u->posts()->save(factory(App\Post::class)->make());
-    	});
+        $users = array(
+            ['id' => 1, 'name' => 'hello1', 'email' => 'hello1@hello.hello', 'password' => 'hellohello1', 'created_at' => new DateTime, 'updated_at' => new DateTime],
+            ['id' => 2, 'name' => 'hello2', 'email' => 'hello2@hello.hello', 'password' => 'hellohello2', 'created_at' => new DateTime, 'updated_at' => new DateTime],
+            ['id' => 3, 'name' => 'hello3', 'email' => 'hello3@hello.hello', 'password' => 'hellohello3', 'created_at' => new DateTime, 'updated_at' => new DateTime],
+        );
+
+        DB::table('users')->insert($users);
     }
 }

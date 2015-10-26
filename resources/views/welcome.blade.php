@@ -4,17 +4,17 @@
 
 @section('content')
        <html>
-    <head>
-        <title>Laravel</title>
+    <h2>
+        <title>ToDoManager</title>
 
         <link href="https://fonts.googleapis.com/css?family=Lato:100" rel="stylesheet" type="text/css">
 
         <style>
-            html, body {
+            h2, h3 {
                 height: 100%;
             }
 
-            body {
+            h3 {
                 margin: 0;
                 padding: 0;
                 width: 100%;
@@ -38,14 +38,14 @@
                 font-size: 96px;
             }
         </style>
-    </head>
-    <body>
+    </h2>
+    <h3>
         <div class="container">
             <div class="content">
-                <div class="title">Tim's Website</div>
+                <div class="title">ToDo Manager</div>
             </div>
         </div>
-    </body>
+    </h3>
 </html>
 
     @endsection

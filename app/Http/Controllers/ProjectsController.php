@@ -2,22 +2,40 @@
 
 namespace App\Http\Controllers;
 
+use Input;
+use Redirect;
 use App\Project;
+use App\User;
+use Auth;
+use App;
 use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
 class ProjectsController extends Controller
 {
+
+    protected $rules = [
+        'name' => ['required', 'min:3'],
+        'slug' => ['required'],
+    ];
+
+    public function __construct()
+    {
+        $this->currentUser = Auth::user();
+        $this->middleware('auth');
+    }
+
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(User $user)
     {
         //
-        $projects = Project::all();
+        $user = $this->currentUser;
+        $projects = Project::where('user_id', $user->id)->get();
         return view('projects.index', compact('projects'));
     }
 
@@ -38,9 +56,17 @@ class ProjectsController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Project $project)
+    public function store(User $user, Project $project, Request $request)
     {
         //
+        $this->validate($request, $this->rules);
+        $user = $this->currentUser;
+
+        $input = Input::all();
+        $input['user_id'] = $user->id;
+        Project::create($input);
+
+        return Redirect::route('projects.index')->with('message', 'Project.created');
     }
 
     /**
@@ -74,9 +100,14 @@ class ProjectsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Project $project)
+    public function update(Project $project, Request $request)
     {
         //
+        $this->validate($request, $this->rules);
+        $input = array_except(Input::all(), '_method');
+        $project->update($input);
+
+        return Redirect::route('projects.show', $project->slug)->with('message', 'Project updated.');
     }
 
     /**
@@ -88,5 +119,8 @@ class ProjectsController extends Controller
     public function destroy(Project $project)
     {
         //
+        $project->delete();
+
+        return Redirect::route('projects.index')->with('message', 'Project deleted.');
     }
 }

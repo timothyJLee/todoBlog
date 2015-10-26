@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use Input;
+use Redirect;
 use App\Project;
 use App\Task;
 use Illuminate\Http\Request;
@@ -11,6 +13,12 @@ use App\Http\Controllers\Controller;
 
 class TasksController extends Controller
 {
+    protected $rules = [
+        'name' => ['required', 'min:3'],
+        'slug' => ['required'],
+        'description' => ['required'],
+    ];
+
     /**
      * Display a listing of the resource.
      *
@@ -39,9 +47,16 @@ class TasksController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Project $project)
+    public function store(Project $project, Request $request)
     {
         //
+        $this->validate($request, $this->rules);
+
+        $input = Input::all();
+        $input['project_id'] = $project->id;
+        Task::create($input);
+
+        return Redirect::route('projects.show', $project->slug)->with('message', 'Task created.');
     }
 
     /**
@@ -75,9 +90,14 @@ class TasksController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Project $project, Task $task)
+    public function update(Project $project, Task $task, Request $request)
     {
         //
+        $this->validate($request, $this->rules);
+        $input = array_except(Input::all(), '_method');
+        $task->update($input);
+
+        return Redirect::route('projects.tasks.show', [$project->slug])->with('message', 'Task updated.');
     }
 
     /**
@@ -89,5 +109,8 @@ class TasksController extends Controller
     public function destroy(Project $project, Task $task)
     {
         //
+        $task->delete();
+
+        return Redirect::route('projects.show', $project->slug)->with('message', 'Task deleted.');
     }
 }
